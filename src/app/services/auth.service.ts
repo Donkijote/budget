@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -19,8 +19,9 @@ export interface AuthResponseData {
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   private USER = new BehaviorSubject<User>(null);
+  private activeLogoutTime: any;
 
   get userIsAuthenticated() {
     return this.USER.asObservable().pipe(
@@ -80,6 +81,7 @@ export class AuthService {
       tap((user) => {
         if (user) {
           this.USER.next(user);
+          this.autoLogout(user.tokenDuration);
         }
       }),
       map((user) => {
@@ -115,22 +117,31 @@ export class AuthService {
   }
 
   logout() {
+    if (this.activeLogoutTime) {
+      clearTimeout(this.activeLogoutTime);
+    }
     this.USER.next(null);
     Plugins.Storage.remove({ key: 'authData' });
+  }
+
+  ngOnDestroy(): void {
+    if (this.activeLogoutTime) {
+      clearTimeout(this.activeLogoutTime);
+    }
   }
 
   private setUserData(userData: AuthResponseData) {
     const expirationTime = new Date(
       new Date().getTime() + +userData.expiresIn * 1000
     );
-    this.USER.next(
-      new User(
-        userData.localId,
-        userData.email,
-        userData.idToken,
-        expirationTime
-      )
+    const user = new User(
+      userData.localId,
+      userData.email,
+      userData.idToken,
+      expirationTime
     );
+    this.USER.next(user);
+    this.autoLogout(user.tokenDuration);
     this.storeAuthData(
       userData.localId,
       userData.idToken,
@@ -155,5 +166,14 @@ export class AuthService {
       key: 'authData',
       value: data,
     });
+  }
+
+  private autoLogout(duration: number): void {
+    if (this.activeLogoutTime) {
+      clearTimeout(this.activeLogoutTime);
+    }
+    this.activeLogoutTime = setTimeout(() => {
+      this.logout();
+    }, duration);
   }
 }

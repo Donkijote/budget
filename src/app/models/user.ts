@@ -16,4 +16,12 @@ export class User {
 
     return this.TOKEN;
   }
+
+  get tokenDuration(): number {
+    if (!this.token) {
+      return 0;
+    }
+
+    return this.TOKEN_EXPIRANTION_DATE.getTime() - new Date().getTime();
+  }
 }
