@@ -48,6 +48,46 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  autoLogin() {
+    return from(Plugins.Storage.get({ key: 'authData' })).pipe(
+      map((storedData) => {
+        if (!storedData || !storedData.value) {
+          return null;
+        }
+
+        const parsedData = JSON.parse(storedData.value) as {
+          token: string;
+          tokenExpirationDate: string;
+          userId: string;
+          email: string;
+        };
+
+        const expirationTime = new Date(parsedData.tokenExpirationDate);
+
+        if (expirationTime <= new Date()) {
+          return null;
+        }
+
+        const user = new User(
+          parsedData.userId,
+          parsedData.email,
+          parsedData.token,
+          expirationTime
+        );
+
+        return user;
+      }),
+      tap((user) => {
+        if (user) {
+          this.USER.next(user);
+        }
+      }),
+      map((user) => {
+        return !!user;
+      })
+    );
+  }
+
   singup(email: string, password: string): Observable<AuthResponseData> {
     return this.http
       .post<AuthResponseData>(
@@ -93,19 +133,22 @@ export class AuthService {
     this.storeAuthData(
       userData.localId,
       userData.idToken,
-      expirationTime.toISOString()
+      expirationTime.toISOString(),
+      userData.email
     );
   }
 
   private storeAuthData(
     userId: string,
     token: string,
-    tokenExpirationDate: string
+    tokenExpirationDate: string,
+    email
   ): void {
     const data = JSON.stringify({
       userId,
       token,
       tokenExpirationDate,
+      email,
     });
     Plugins.Storage.set({
       key: 'authData',
