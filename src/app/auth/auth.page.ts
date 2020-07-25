@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
-import { AuthService } from '../services/auth.service';
+import { LoadingController, AlertController } from '@ionic/angular';
+import { Observable } from 'rxjs';
 
+import { AuthService, AuthResponseData } from '../services/auth.service';
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.page.html',
@@ -15,28 +16,11 @@ export class AuthPage implements OnInit {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {}
-
-  onLogin() {
-    this.isLoading = true;
-    this.auth.login();
-    this.loadingCtrl
-      .create({
-        keyboardClose: true,
-        message: 'Logging in..',
-      })
-      .then((el) => {
-        el.present();
-        setTimeout(() => {
-          this.isLoading = false;
-          el.dismiss();
-          this.router.navigateByUrl('/places/tabs/discover');
-        }, 1500);
-      });
-  }
 
   onSubmit(form: NgForm) {
     if (!form.valid) {
@@ -44,16 +28,55 @@ export class AuthPage implements OnInit {
     }
     const email = form.value.email;
     const password = form.value.password;
-
-    console.log(email, password);
-
-    if (this.isLogin) {
-      // Send
-    } else {
-    }
+    this.authenticate(email, password);
   }
 
   onSwitchAuth() {
     this.isLogin = !this.isLogin;
+  }
+
+  private authenticate(email: string, password: string): void {
+    this.isLoading = true;
+    this.loadingCtrl
+      .create({
+        keyboardClose: true,
+        message: 'Logging in..',
+      })
+      .then((el) => {
+        el.present();
+        let authObs: Observable<AuthResponseData>;
+        if (this.isLogin) {
+          authObs = this.auth.login(email, password);
+        } else {
+          authObs = this.auth.singup(email, password);
+        }
+        authObs.subscribe(
+          (respData) => {
+            this.isLoading = false;
+            el.dismiss();
+            this.router.navigateByUrl('home');
+          },
+          (err) => {
+            el.dismiss();
+            const code = err.error.error.message;
+            let message = 'No se puedo registrar, por vafor intente de nuevo';
+
+            if (code === 'EMAIL_EXISTS') {
+              message = 'El Email ya existe';
+            } else if (code === 'EMAIL_NOT_FOUND') {
+              message = 'Email no existe';
+            } else if (code === 'INVALID_PASSWORD') {
+              message = 'Credenciales incorrectas';
+            }
+            this.showAlert(message);
+          }
+        );
+      });
+  }
+
+  private showAlert(message: string): void {
+    this.alertCtrl
+      .create({ header: 'Autenticacion fallo', message, buttons: ['Ok'] })
+      .then((el) => el.present());
   }
 }
