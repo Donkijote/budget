@@ -1,5 +1,8 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="Menu">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Budget App | {{ Title }}</ion-title>
   </ion-toolbar>
 </ion-header>
