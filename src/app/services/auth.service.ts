@@ -48,7 +48,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  autoLogin() {
+  autoLogin(): Observable<boolean> {
     return from(Plugins.Storage.get({ key: 'authData' })).pipe(
       map((storedData) => {
         if (!storedData || !storedData.value) {
@@ -116,6 +116,7 @@ export class AuthService {
 
   logout() {
     this.USER.next(null);
+    Plugins.Storage.remove({ key: 'authData' });
   }
 
   private setUserData(userData: AuthResponseData) {
@@ -142,7 +143,7 @@ export class AuthService {
     userId: string,
     token: string,
     tokenExpirationDate: string,
-    email
+    email: string
   ): void {
     const data = JSON.stringify({
       userId,
