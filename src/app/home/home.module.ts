@@ -6,6 +6,7 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import { SharedModule } from '../components/shared.module';
+import { AddBudgetComponent } from './add-budget/add-budget.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { SharedModule } from '../components/shared.module';
     HomePageRoutingModule,
     SharedModule,
   ],
-  declarations: [HomePage],
+  declarations: [HomePage, AddBudgetComponent],
+  entryComponents: [AddBudgetComponent],
 })
 export class HomePageModule {}

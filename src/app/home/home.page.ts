@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonDatetime } from '@ionic/angular';
+import { IonDatetime, ModalController } from '@ionic/angular';
+import { AddBudgetComponent } from './add-budget/add-budget.component';
 
 @Component({
   selector: 'app-home',
@@ -10,7 +11,7 @@ export class HomePage implements OnInit {
   @ViewChild('dateTime', { static: true }) datePicker: IonDatetime;
   title: string;
   date: string;
-  constructor() {}
+  constructor(private modal: ModalController) {}
 
   ngOnInit(): void {
     const date = new Date();
@@ -25,5 +26,20 @@ export class HomePage implements OnInit {
 
   onOpenCalendar(): void {
     this.datePicker.open();
+  }
+
+  onAddNewBudget(): void {
+    this.modal
+      .create({
+        backdropDismiss: false,
+        component: AddBudgetComponent,
+      })
+      .then((el) => {
+        el.present();
+        return el.onDidDismiss();
+      })
+      .then((data) => {
+        console.log(data);
+      });
   }
 }
