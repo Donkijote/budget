@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonDatetime, ModalController } from '@ionic/angular';
 import { AddBudgetComponent } from './add-budget/add-budget.component';
+import { IBudget } from '../models/budget';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,7 @@ export class HomePage implements OnInit {
     this.date = date.toISOString();
   }
 
-  updateMyDate($event) {
+  updateMyDate($event: any) {
     const pickedDate = new Date($event.detail.value);
     this.title = pickedDate.toISOString();
   }
@@ -38,8 +39,8 @@ export class HomePage implements OnInit {
         el.present();
         return el.onDidDismiss();
       })
-      .then((data) => {
-        console.log(data);
+      .then((result) => {
+        const budget: IBudget = result.data;
       });
   }
 }

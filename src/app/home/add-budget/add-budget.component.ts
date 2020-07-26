@@ -25,10 +25,8 @@ export class AddBudgetComponent implements OnInit {
 
     this.modalCtrl.dismiss(
       {
-        budgetData: {
-          type: this.budgetForm.value['type'],
-          amount: this.budgetForm.value['amount'],
-        },
+        type: this.budgetForm.value['type'],
+        amount: this.budgetForm.value['amount'],
       },
       'confirm'
     );
