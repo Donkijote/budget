@@ -62,7 +62,32 @@ export class BudgetService {
     );
   }
 
-  fetchBudgets(date: string) {
+  deleteBudget(budgetId: string): any {
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      take(1),
+      switchMap((userId) => {
+        if (!userId) {
+          throw new Error('Usuario no encontrado');
+        }
+        fetchedUserId = userId;
+        return this.authService.token;
+      }),
+      take(1),
+      switchMap((token) => {
+        return this.http.delete(this.url + `${fetchedUserId}/${budgetId}.json`);
+      }),
+      switchMap(() => {
+        return this.budgets;
+      }),
+      take(1),
+      tap((budgets) => {
+        this.BUDGETS.next(budgets.filter((b) => b.id !== budgetId));
+      })
+    );
+  }
+
+  fetchBudgets(date: string): Observable<Budget[]> {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
       take(1),

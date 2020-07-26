@@ -128,10 +128,21 @@ export class HomePage implements OnInit, OnDestroy {
       });
   }
 
-  onDeletingBudget(bookingId: string, slidingEl: IonItemSliding): void {
+  onDeletingBudget(budgetId: string, slidingEl: IonItemSliding): void {
     slidingEl.close();
     this.loading.create({ message: 'Eliminando...' }).then((el) => {
       el.present();
+      this.budgetService.deleteBudget(budgetId).subscribe(() => {
+        el.dismiss();
+      });
+    });
+  }
+
+  delitingOnSlide(budgetId: string, slidingEl: IonItemSliding) {
+    slidingEl.getOpenAmount().then((num) => {
+      if (num >= 300) {
+        this.onDeletingBudget(budgetId, slidingEl);
+      }
     });
   }
 }

@@ -45,6 +45,7 @@
           <ion-item-sliding
             *ngFor="let budget of loadedBudgets"
             #slidingBooking
+            (ionDrag)="delitingOnSlide(budget.id, slidingBooking)"
           >
             <ion-item lines="full">
               <ion-icon
