@@ -12,6 +12,7 @@ export class AddBudgetComponent implements OnInit {
   constructor(private modalCtrl: ModalController, private fb: FormBuilder) {
     this.budgetForm = this.fb.group({
       type: ['', Validators.required],
+      title: ['', Validators.required],
       amount: ['', Validators.required],
     });
   }
@@ -26,6 +27,7 @@ export class AddBudgetComponent implements OnInit {
     this.modalCtrl.dismiss(
       {
         type: this.budgetForm.value['type'],
+        title: this.budgetForm.value['title'],
         amount: this.budgetForm.value['amount'],
       },
       'confirm'
