@@ -1,124 +1,16 @@
-<app-header
-  [Title]="title | date:'E dd, MMMM yyyy'"
-  [Menu]="true"
-  [Actions]="true"
-  [openCalendar]="onOpenCalendar.bind(this)"
-  [addNewBudget]="onAddNewBudget.bind(this)"
-></app-header>
-
-<ion-content>
-  <ion-datetime
-    style="display: none;"
-    #dateTime
-    pickerFormat="DD MM YYYY"
-    done-text="Ok"
-    (ionChange)="updateMyDate($event)"
-  >
-  </ion-datetime>
-  <ion-grid fixed>
-    <ion-row>
-      <ion-col
-        size-md="6"
-        offset-md="3"
-        class="ion-text-center"
-        *ngIf="isLoading"
-      >
-        <ion-progress-bar
-          type="indeterminate"
-          reversed="true"
-        ></ion-progress-bar>
-      </ion-col>
-      <ion-col
-        size-md="6"
-        offset-md="3"
-        *ngIf="!isLoading && (!loadedBudgets || loadedBudgets.length <= 0)"
-        class="ion-text-center"
-      >
-        <p>No hay transacciones!</p>
-      </ion-col>
-      <ion-col
-        size-md="6"
-        offset-md="3"
-        *ngIf="!isLoading && loadedBudgets && loadedBudgets.length > 0"
-      >
-        <ion-list>
-          <ion-item-sliding
-            *ngFor="let budget of loadedBudgets"
-            #slidingBooking
-            (ionDrag)="delitingOnSlide(budget.id, slidingBooking)"
-          >
-            <ion-item lines="full">
-              <ion-icon
-                slot="start"
-                [name]="budget.type === 1 ? 'add-outline':'remove-outline'"
-                [color]="budget.type === 1 ? 'success':'danger'"
-              ></ion-icon>
-              <ion-label>
-                <small>{{ budget.title }}</small> {{ budget.amount }}$
-              </ion-label>
-            </ion-item>
-            <ion-item-options>
-              <ion-item-option
-                color="danger"
-                (click)="onDeletingBudget(budget.id, slidingBooking)"
-              >
-                <ion-icon name="trash" slot="icon-only"></ion-icon>
-              </ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
-        </ion-list>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <ion-grid
-    fixed
-    *ngIf="!isLoading && loadedBudgets && loadedBudgets.length > 0"
-  >
-    <ion-row>
-      <ion-col offset="6" size="6">
-        <ion-item lines="full">
-          <ion-label>Totales</ion-label>
-        </ion-item>
-        <ion-row>
-          <ion-col size="6" class="ion-text-right">Ingresos</ion-col>
-          <ion-col size="6" class="ion-text-right">
-            <ion-label color="success">
-              <ion-icon slot="start" name="add"></ion-icon>
-              {{totalIn}}
-            </ion-label>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="6" class="ion-text-right">Egresos</ion-col>
-          <ion-col size="6" class="ion-text-right">
-            <ion-label color="danger">
-              <ion-icon slot="start" name="remove"></ion-icon>
-              {{totalOut}}
-            </ion-label>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="6" class="ion-text-right"></ion-col>
-          <ion-col size="6" class="ion-text-right">
-            <ion-label color="black">
-              <ion-icon name="cash-outline"></ion-icon>
-              {{totalSum}}
-            </ion-label>
-          </ion-col>
-        </ion-row>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <ion-fab
-    vertical="bottom"
-    horizontal="end"
-    slot="fixed"
-    (click)="onAddNewBudget()"
-  >
-    <ion-fab-button>
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-</ion-content>
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="today">
+      <ion-label>Hoy</ion-label>
+      <ion-icon name="today-outline"></ion-icon>
+    </ion-tab-button>
+    <ion-tab-button tab="week">
+      <ion-label>Semana</ion-label>
+      <ion-icon name="calendar-outline"></ion-icon>
+    </ion-tab-button>
+    <ion-tab-button tab="month">
+      <ion-label>Mes</ion-label>
+      <ion-icon name="bar-chart-outline"></ion-icon>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

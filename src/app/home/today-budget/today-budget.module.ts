@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { TodayBudgetPageRoutingModule } from './today-budget-routing.module';
 
 import { TodayBudgetPage } from './today-budget.page';
+import { SharedModule } from '../../components/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TodayBudgetPageRoutingModule
+    TodayBudgetPageRoutingModule,
+    SharedModule,
   ],
-  declarations: [TodayBudgetPage]
+  declarations: [TodayBudgetPage],
 })
 export class TodayBudgetPageModule {}
