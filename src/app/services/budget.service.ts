@@ -87,7 +87,7 @@ export class BudgetService {
     );
   }
 
-  fetchBudgets(date: string): Observable<Budget[]> {
+  fetchBudgets(date: string, dateFrom?: string): Observable<Budget[]> {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
       take(1),
@@ -100,9 +100,16 @@ export class BudgetService {
       }),
       take(1),
       switchMap((token) => {
-        return this.http.get<{ [key: string]: Budget }>(
-          this.url + `${fetchedUserId}.json?orderBy="date"&equalTo="${date}"`
-        );
+        let url: string;
+        if (dateFrom && dateFrom !== '') {
+          url =
+            this.url +
+            `${fetchedUserId}.json?orderBy="date"&startAt="${dateFrom}"&endAt="${date}"`;
+        } else {
+          url =
+            this.url + `${fetchedUserId}.json?orderBy="date"&equalTo="${date}"`;
+        }
+        return this.http.get<{ [key: string]: Budget }>(url);
       }),
       map((data) => {
         const budgets = [];

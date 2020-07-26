@@ -1,9 +1,50 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>weekly-budget</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header
+  [Title]="title | date:'E dd, MMMM yyyy'"
+  [Menu]="true"
+  [Actions]="false"
+></app-header>
 
 <ion-content>
-
+  <ion-grid
+    fixed
+    *ngIf="!isLoading && loadedBudgets && loadedBudgets.length > 0"
+  >
+    <ion-row>
+      <ion-col size="12">
+        <ion-item lines="full">
+          <ion-label
+            >Totales entre {{dateFrom | date:'dd/MM/yyyy'}} y {{dateTo |
+            date:'dd/MM/yyyy'}}</ion-label
+          >
+        </ion-item>
+        <ion-row>
+          <ion-col size="6" class="ion-text-right">Ingresos</ion-col>
+          <ion-col size="6" class="ion-text-right">
+            <ion-label color="success">
+              <ion-icon slot="start" name="add"></ion-icon>
+              {{totalIn}}
+            </ion-label>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6" class="ion-text-right">Egresos</ion-col>
+          <ion-col size="6" class="ion-text-right">
+            <ion-label color="danger">
+              <ion-icon slot="start" name="remove"></ion-icon>
+              {{totalOut}}
+            </ion-label>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6" class="ion-text-right"></ion-col>
+          <ion-col size="6" class="ion-text-right">
+            <ion-label color="black">
+              <ion-icon name="cash-outline"></ion-icon>
+              {{totalSum}}
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
