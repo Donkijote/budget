@@ -1,4 +1,7 @@
-<app-header [Title]="isLogin ? 'Iniciar Sesion':'Registrarse'"></app-header>
+<app-header
+  [Title]="isLogin ? 'Iniciar Sesion':'Registrarse'"
+  [Actions]="false"
+></app-header>
 
 <ion-content>
   <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">

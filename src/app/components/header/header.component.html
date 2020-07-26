@@ -4,7 +4,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Budget App | {{ Title }}</ion-title>
-    <ion-buttons slot="primary">
+    <ion-buttons slot="primary" *ngIf="Actions">
       <ion-button slot="start" (click)="openCalendar()">
         <ion-icon md="calendar-outline" ios="calendar-sharp"></ion-icon>
       </ion-button>
