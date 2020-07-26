@@ -2,18 +2,26 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { IBudget, Budget } from '../models/budget';
-import { Observable } from 'rxjs';
-import { take, switchMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { take, switchMap, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BudgetService {
   private url = 'https://budget-b43fc.firebaseio.com/budget.json';
+  private BUDGET = new BehaviorSubject<Budget[]>([]);
+
+  get budgets() {
+    return this.BUDGET.asObservable();
+  }
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  addNewBudget(data: IBudget): Observable<{ name: string }> {
+  addNewBudget(data: IBudget): Observable<Budget[]> {
     let fetchedUserId: string;
+    let generatedId: string;
+    let newBudget: Budget;
     return this.authService.userId.pipe(
       take(1),
       switchMap((userId) => {
@@ -25,7 +33,8 @@ export class BudgetService {
       }),
       take(1),
       switchMap((token) => {
-        const newBudget = new Budget(
+        newBudget = new Budget(
+          '',
           fetchedUserId,
           +data.type,
           data.title,
@@ -36,6 +45,15 @@ export class BudgetService {
           ...newBudget,
           id: null,
         });
+      }),
+      switchMap((resData) => {
+        generatedId = resData.name;
+        return this.budgets;
+      }),
+      take(1),
+      tap((result) => {
+        newBudget.id = generatedId;
+        this.BUDGET.next(result.concat(newBudget));
       })
     );
   }

@@ -7,6 +7,7 @@ export interface IBudget {
 
 export class Budget {
   constructor(
+    public id: string,
     public userId: string,
     public type: number,
     public title: string,
