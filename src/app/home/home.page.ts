@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import {
   IonDatetime,
   ModalController,
@@ -8,16 +8,19 @@ import {
 import { AddBudgetComponent } from './add-budget/add-budget.component';
 import { IBudget } from '../models/budget';
 import { BudgetService } from '../services/budget.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
+  private budgetSub: Subscription;
   @ViewChild('dateTime', { static: true }) datePicker: IonDatetime;
   title: string;
-  date: string;
+  date = new Date().toISOString();
+  isLoading = false;
   constructor(
     private modal: ModalController,
     private loading: LoadingController,
@@ -26,9 +29,24 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const date = new Date();
-    this.title = date.toISOString();
-    this.date = date.toISOString();
+    this.title = this.date;
+
+    this.budgetSub = this.budgetService.budgets.subscribe((budgets) => {
+      console.log(budgets);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.budgetSub) {
+      this.budgetSub.unsubscribe();
+    }
+  }
+
+  ionViewWillEnter(): void {
+    this.isLoading = true;
+    this.budgetService.fetchBudgets(this.date.split('T')[0]).subscribe(() => {
+      this.isLoading = false;
+    });
   }
 
   updateMyDate($event: any) {
@@ -52,7 +70,7 @@ export class HomePage implements OnInit {
       })
       .then((result) => {
         const budget: IBudget = result.data;
-        budget.date = new Date(this.date);
+        budget.date = this.date.split('T')[0];
         this.loading
           .create({
             message: 'Guardando transaccion',
