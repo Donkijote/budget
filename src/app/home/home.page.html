@@ -1,4 +1,9 @@
-<app-header [Title]="title | date:'E dd, MMMM yyyy'" [Menu]="true"></app-header>
+<app-header
+  [Title]="title | date:'E dd, MMMM yyyy'"
+  [Menu]="true"
+  [Actions]="true"
+  [openCalendar]="onOpenCalendar.bind(this)"
+></app-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
@@ -9,6 +14,15 @@
 
   <div id="container">
     <strong>Ready to create an app?</strong>
+    <ion-datetime
+      style="display: none;"
+      #dateTime
+      pickerFormat="DD MM YYYY"
+      done-text="Ok"
+      [max]="date"
+      (ionChange)="updateMyDate($event)"
+    >
+    </ion-datetime>
     <p>
       Start with Ionic
       <a
