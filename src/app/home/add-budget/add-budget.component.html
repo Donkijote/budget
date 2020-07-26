@@ -8,3 +8,32 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-content>
+  <form [formGroup]="budgetForm" (ngSubmit)="onAddBudget()">
+    <ion-grid fixed class="ion-margin-top">
+      <ion-row>
+        <ion-col size="6" offset="3">
+          <ion-item>
+            <ion-label>Tipo transaccion</ion-label>
+            <ion-select formControlName="type">
+              <ion-select-option value="1">Ingreso</ion-select-option>
+              <ion-select-option value="2">Egreso</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6" offset="3">
+          <ion-item>
+            <ion-label position="floating">Cantidad</ion-label>
+            <ion-input formControlName="amount" type="number"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6" offset="3">
+          <ion-button type="submit" expand="block">
+            Guardar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
