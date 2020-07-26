@@ -4,9 +4,10 @@ import {
   ModalController,
   LoadingController,
   AlertController,
+  IonItemSliding,
 } from '@ionic/angular';
 import { AddBudgetComponent } from './add-budget/add-budget.component';
-import { IBudget } from '../models/budget';
+import { IBudget, Budget } from '../models/budget';
 import { BudgetService } from '../services/budget.service';
 import { Subscription } from 'rxjs';
 
@@ -18,6 +19,7 @@ import { Subscription } from 'rxjs';
 export class HomePage implements OnInit, OnDestroy {
   private budgetSub: Subscription;
   @ViewChild('dateTime', { static: true }) datePicker: IonDatetime;
+  loadedBudgets: Budget[];
   title: string;
   date = new Date().toISOString();
   isLoading = false;
@@ -32,7 +34,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.title = this.date;
 
     this.budgetSub = this.budgetService.budgets.subscribe((budgets) => {
-      console.log(budgets);
+      this.loadedBudgets = budgets;
     });
   }
 
@@ -101,5 +103,12 @@ export class HomePage implements OnInit, OnDestroy {
             );
           });
       });
+  }
+
+  onDeletingBudget(bookingId: string, slidingEl: IonItemSliding): void {
+    slidingEl.close();
+    this.loading.create({ message: 'Eliminando...' }).then((el) => {
+      el.present();
+    });
   }
 }
